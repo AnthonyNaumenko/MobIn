@@ -1,6 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\GamesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +17,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+//Games
+Route::apiResources([
+    'games' => GamesController::class,
+]);
+
+//AuthUser
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::put('/update', [AuthController::class, 'update']);
+    Route::get('/user', [AuthController::class, 'user']);
 });
+
+//Cart
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart/add/{id}', [CartController::class, 'addToCart']);
+Route::post('/cart/remove/{id}', [CartController::class, 'removeFromCart']);
